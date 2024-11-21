@@ -1,15 +1,15 @@
 "use server";
 
 import { connect } from "../db";
-import User from "../modals/user.modal";
+import User, { IUser } from "../modals/user.modal";
 
-
-export async function createUser(user: any) {
+export async function createUser(user: IUser): Promise<IUser | null> {
   try {
     await connect();
     const newUser = await User.create(user);
-    return JSON.parse(JSON.stringify(newUser));
+    return newUser.toObject(); // Ensure the result is a plain JavaScript object
   } catch (error) {
-    console.log(error);
+    console.error("Error creating user:", error);
+    throw new Error("Failed to create user");
   }
 }

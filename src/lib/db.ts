@@ -7,27 +7,19 @@ interface MongooseConn {
   promise: Promise<Mongoose> | null;
 }
 
-let cached: MongooseConn = (global as any).mongoose;
+let cached: MongooseConn = (global as any).mongoose || { conn: null, promise: null };
 
-if (!cached) {
-  cached = (global as any).mongoose = {
-    conn: null,
-    promise: null,
-  };
-}
-
-export const connect = async () => {
+export const connect = async (): Promise<Mongoose> => {
   if (cached.conn) return cached.conn;
 
-  cached.promise =
-    cached.promise ||
-    mongoose.connect(MONGODB_URL, {
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGODB_URL, {
       dbName: "clerkauthv5",
       bufferCommands: false,
       connectTimeoutMS: 30000,
     });
+  }
 
   cached.conn = await cached.promise;
-
   return cached.conn;
 };

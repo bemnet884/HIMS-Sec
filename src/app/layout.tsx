@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { dark } from '@clerk/themes'
-import { ClerkLoaded, ClerkLoading, ClerkProvider, SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
+import { ClerkLoaded, ClerkLoading, ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 import Header from "@/components/Header";
 const geistSans = localFont({
