@@ -4,9 +4,10 @@ export interface IUser {
   email: string;
   username: string;
   photo: string;
-  firstName?: string;
-  lastName?: string;
+  firstName?: string | null;
+  lastName?: string | null;
 }
+
 const UserSchema = new Schema<IUser>({
   clerkId: {
     type: String,
