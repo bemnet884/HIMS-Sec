@@ -2,24 +2,32 @@ import mongoose, { Mongoose } from "mongoose";
 
 const MONGODB_URL = process.env.MONGODB_URL!;
 
-interface MongooseConn {
+// Define a type for the global mongoose cache
+interface MongooseCache {
   conn: Mongoose | null;
   promise: Promise<Mongoose> | null;
 }
 
-let cached: MongooseConn = (global as any).mongoose || { conn: null, promise: null };
+// Add the cache to the Node.js global object with a specific type
+declare global {
+  // eslint-disable-next-line no-var
+  var mongooseCache: MongooseCache | undefined;
+}
+
+const globalCache: MongooseCache = global.mongooseCache || { conn: null, promise: null };
+global.mongooseCache = globalCache;
 
 export const connect = async (): Promise<Mongoose> => {
-  if (cached.conn) return cached.conn;
+  if (globalCache.conn) return globalCache.conn;
 
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URL, {
+  if (!globalCache.promise) {
+    globalCache.promise = mongoose.connect(MONGODB_URL, {
       dbName: "clerkauthv5",
       bufferCommands: false,
       connectTimeoutMS: 30000,
     });
   }
 
-  cached.conn = await cached.promise;
-  return cached.conn;
+  globalCache.conn = await globalCache.promise;
+  return globalCache.conn;
 };
